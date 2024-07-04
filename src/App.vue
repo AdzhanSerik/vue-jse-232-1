@@ -1,34 +1,15 @@
 <script setup>
-// import Counter from "./components/CounterNumber.vue";
-import Sneaker from "./components/SneakersList.vue"
-
+import Header from './components/HeaderComponent.vue'
+import Cards from './components/CardsItems.vue'
 </script>
 
 <template>
-<div class="carts">
-  <Sneaker name="Кросы" brand="Nike" price="54000" />
-  <Sneaker />
-  <Sneaker />
-  <Sneaker />
-  <Sneaker />
-  <Sneaker />
-  <Sneaker />
-  <Sneaker />
-  <Sneaker />
-</div>
-
+  <div class="w-4/5 m-auto bg-white rounded-xl shadow-xl mt-14 pb-2">
+    <Header />
+    <h2 class="font-bold text-xl p-10">Все кроссовки</h2>
+    <Cards />
+  </div>
 </template>
 
 <style scoped>
-h1 {
-  font-size: 40px;
-  font-weight: 300;
-}
-.carts {
-  display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-}
 </style>
