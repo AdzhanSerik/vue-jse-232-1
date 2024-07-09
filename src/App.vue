@@ -1,15 +1,31 @@
 <script setup>
 import Header from './components/HeaderComponent.vue'
 import Cards from './components/CardsItems.vue'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import axios from 'axios'
 // import Drawer from './components/DrawerComponent.vue'
 
 const items = ref([])
+const sortBy = ref('')
+
+const onChangeSelect = (event) => {
+  sortBy.value = event.target.value
+}
 
 onMounted(async () => {
   try {
     const { data } = await axios.get('https://269b3b45e08bcd1a.mokky.dev/items')
+    items.value = data
+  } catch (error) {
+    console.log(error)
+  }
+})
+
+watch(sortBy, async () => {
+  try {
+    const { data } = await axios.get(
+      'https://269b3b45e08bcd1a.mokky.dev/items?sortBy=' + sortBy.value
+    )
     items.value = data
   } catch (error) {
     console.log(error)
@@ -24,10 +40,13 @@ onMounted(async () => {
     <div class="flex justify-between pr-10">
       <h2 class="font-bold text-xl p-10">Все кроссовки</h2>
       <div class="flex gap-3 items-center">
-        <select class="border border-gray-200 rounded-md outline-none py-2 px-2">
-          <option value="">По названию</option>
-          <option value="">По цену</option>
-          <option value="">По дешевке</option>
+        <select
+          @change="onChangeSelect"
+          class="border border-gray-200 rounded-md outline-none py-2 px-2"
+        >
+          <option value="title">По названию</option>
+          <option value="price">По возрастанию цены</option>
+          <option value="-price">По убыванию цены</option>
         </select>
         <div class="relative">
           <input
