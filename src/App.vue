@@ -1,42 +1,59 @@
 <script setup>
 import Header from './components/HeaderComponent.vue'
 import Cards from './components/CardsItems.vue'
-import { onMounted, ref, watch } from 'vue'
+import { onMounted, reactive, ref, watch, provide } from 'vue'
 import axios from 'axios'
-// import Drawer from './components/DrawerComponent.vue'
+import Drawer from './components/DrawerComponent.vue'
 
 const items = ref([])
-const sortBy = ref('')
+const openCart = ref(false)
+const filters = reactive({
+  sortBy: 'title',
+  searchBy: ''
+})
 
-const onChangeSelect = (event) => {
-  sortBy.value = event.target.value
+const openDrawer = () => {
+  openCart.value = true
+}
+const closeDrawer = () => {
+  openCart.value = false
 }
 
-onMounted(async () => {
-  try {
-    const { data } = await axios.get('https://269b3b45e08bcd1a.mokky.dev/items')
-    items.value = data
-  } catch (error) {
-    console.log(error)
-  }
-})
+provide('closeDrawer', closeDrawer)
 
-watch(sortBy, async () => {
+const fetchItems = async () => {
   try {
-    const { data } = await axios.get(
-      'https://269b3b45e08bcd1a.mokky.dev/items?sortBy=' + sortBy.value
-    )
+    const params = {
+      sortBy: filters.sortBy
+    }
+    if (filters.searchBy) {
+      params.title = filters.searchBy
+    }
+    const { data } = await axios.get(`https://269b3b45e08bcd1a.mokky.dev/items`, {
+      params
+    })
     items.value = data
   } catch (error) {
     console.log(error)
   }
-})
+}
+
+const onChangeSelect = (event) => {
+  filters.sortBy = event.target.value
+}
+
+const onChangeInput = (event) => {
+  filters.searchBy = `*${event.target.value}*`
+}
+
+onMounted(fetchItems)
+watch(filters, fetchItems)
 </script>
 
 <template>
-  <!-- <Drawer /> -->
+  <Drawer v-if="openCart" />
   <div class="w-4/5 m-auto bg-white rounded-xl shadow-xl mt-14 pb-2">
-    <Header />
+    <Header :openDrawer="openDrawer" />
     <div class="flex justify-between pr-10">
       <h2 class="font-bold text-xl p-10">Все кроссовки</h2>
       <div class="flex gap-3 items-center">
@@ -50,6 +67,7 @@ watch(sortBy, async () => {
         </select>
         <div class="relative">
           <input
+            @input="onChangeInput"
             type="text"
             class="border border-gray-200 rounded-md py-2 pl-10 pr-4 focus:outline-none focus:border-gray-400"
             placeholder="Поиск..."
