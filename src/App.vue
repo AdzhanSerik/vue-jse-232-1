@@ -43,6 +43,52 @@ const fetchItems = async () => {
   }
 }
 
+const fetchFavorites = async () => {
+  try {
+    const { data: favorites } = await axios.get(`https://269b3b45e08bcd1a.mokky.dev/favorites`)
+    items.value = items.value.map((item) => {
+      const favorite = favorites.find((fav) => fav.sneakerId === item.id)
+      if (!favorite) {
+        return item
+      }
+      return {
+        ...item,
+        isFavourite: true
+      }
+    })
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+const addToFavorite = async (id) => {
+  const updatedItems = await Promise.all(
+    items.value.map(async (item) => {
+      if (item.id === id) {
+        const { data } = await axios.get(`https://269b3b45e08bcd1a.mokky.dev/favorites`)
+        const favorite = data.find((fav) => fav.sneakerId === item.id)
+
+        if (item.isFavourite) {
+          await axios.delete(`https://269b3b45e08bcd1a.mokky.dev/favorites/${favorite.id}`)
+        } else {
+          const obj = { sneakerId: item.id }
+          await axios.post(`https://269b3b45e08bcd1a.mokky.dev/favorites`, obj)
+        }
+
+        return {
+          ...item,
+          isFavourite: !item.isFavourite
+        }
+      }
+      return item
+    })
+  )
+
+  items.value = updatedItems
+}
+
+provide('addToFavorite', addToFavorite)
+
 const onChangeSelect = (event) => {
   filters.sortBy = event.target.value
 }
@@ -51,7 +97,10 @@ const onChangeInput = (event) => {
   filters.searchBy = `*${event.target.value}*`
 }
 
-onMounted(fetchItems)
+onMounted(async () => {
+  await fetchItems()
+  await fetchFavorites()
+})
 watch(filters, fetchItems)
 </script>
 
