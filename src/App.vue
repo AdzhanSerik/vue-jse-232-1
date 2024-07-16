@@ -32,7 +32,12 @@ const fetchItems = async () => {
     const { data } = await axios.get(`https://269b3b45e08bcd1a.mokky.dev/items`, {
       params
     })
-    items.value = data
+
+    items.value = data.map((obj) => ({
+      ...obj,
+      isAdded: false,
+      isFavourite: false
+    }))
   } catch (error) {
     console.log(error)
   }
