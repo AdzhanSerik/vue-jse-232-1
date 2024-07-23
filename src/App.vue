@@ -53,7 +53,8 @@ const fetchFavorites = async () => {
       }
       return {
         ...item,
-        isFavorite: true
+        isFavorite: true,
+        favoriteId: favorite.id
       }
     })
   } catch (error) {
@@ -62,8 +63,20 @@ const fetchFavorites = async () => {
 }
 
 const addToFavorite = async (item) => {
-  item.isFavorite = !item.isFavorite
-  console.log(item)
+  try {
+    if (!item.isFavorite) {
+      const obj = { sneakerId: item.id }
+      const { data } = await axios.post('https://269b3b45e08bcd1a.mokky.dev/favorites', obj)
+      item.isFavorite = true
+      item.favoriteId = data.id
+      console.log(item)
+    } else {
+      await axios.delete(`https://269b3b45e08bcd1a.mokky.dev/favorites/${item.favoriteId}`)
+      item.isFavorite = false
+    }
+  } catch (error) {
+    console.log(error)
+  }
 }
 
 const onChangeSelect = (event) => {
