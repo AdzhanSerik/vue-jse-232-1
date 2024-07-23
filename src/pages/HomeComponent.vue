@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-between p-10">
+  <div class="flex justify-between">
     <h2 class="font-bold text-xl">Все кроссовки</h2>
     <div class="flex gap-3 items-center">
       <select
@@ -32,6 +32,7 @@ import { onMounted, reactive, ref, watch } from 'vue'
 import axios from 'axios'
 
 const items = ref([])
+
 const filters = reactive({
   sortBy: 'title',
   searchBy: ''
@@ -107,5 +108,6 @@ onMounted(async () => {
   await fetchItems()
   await fetchFavorites()
 })
+
 watch(filters, fetchItems)
 </script>
