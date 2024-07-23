@@ -13,7 +13,10 @@ defineProps({
 
 
 <template>
-  <div class="border p-10 rounded-xl relative transition hover:-translate-y-2 hover:shadow-xl">
+  <div
+    v-auto-animate
+    class="border p-10 rounded-xl relative transition hover:-translate-y-2 hover:shadow-xl"
+  >
     <img
       @click="onClickFavorite"
       :src="isFavorite ? '/like-2.svg' : '/like-1.svg'"
