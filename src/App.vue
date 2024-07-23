@@ -36,7 +36,7 @@ const fetchItems = async () => {
     items.value = data.map((obj) => ({
       ...obj,
       isAdded: false,
-      isFavourite: false
+      isFavorite: false
     }))
   } catch (error) {
     console.log(error)
@@ -53,7 +53,7 @@ const fetchFavorites = async () => {
       }
       return {
         ...item,
-        isFavourite: true
+        isFavorite: true
       }
     })
   } catch (error) {
@@ -61,33 +61,10 @@ const fetchFavorites = async () => {
   }
 }
 
-const addToFavorite = async (id) => {
-  const updatedItems = await Promise.all(
-    items.value.map(async (item) => {
-      if (item.id === id) {
-        const { data } = await axios.get(`https://269b3b45e08bcd1a.mokky.dev/favorites`)
-        const favorite = data.find((fav) => fav.sneakerId === item.id)
-
-        if (item.isFavourite) {
-          await axios.delete(`https://269b3b45e08bcd1a.mokky.dev/favorites/${favorite.id}`)
-        } else {
-          const obj = { sneakerId: item.id }
-          await axios.post(`https://269b3b45e08bcd1a.mokky.dev/favorites`, obj)
-        }
-
-        return {
-          ...item,
-          isFavourite: !item.isFavourite
-        }
-      }
-      return item
-    })
-  )
-
-  items.value = updatedItems
+const addToFavorite = async (item) => {
+  item.isFavorite = !item.isFavorite
+  console.log(item)
 }
-
-provide('addToFavorite', addToFavorite)
 
 const onChangeSelect = (event) => {
   filters.sortBy = event.target.value
@@ -133,7 +110,7 @@ watch(filters, fetchItems)
       </div>
     </div>
 
-    <Cards :items="items" />
+    <Cards :items="items" @addToFavorite="addToFavorite" />
   </div>
 </template>
 
